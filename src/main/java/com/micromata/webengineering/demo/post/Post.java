@@ -1,39 +1,46 @@
 package com.micromata.webengineering.demo.post;
 
+import org.springframework.data.annotation.CreatedDate;
+
+import javax.persistence.*;
+import java.util.Date;
+
 /**
  * A single Post in the Forum
  */
+@Entity
 public class Post {
 
     // the identifier for this Post
-    private int id;
+    @Id
+    @GeneratedValue
+    private long id;
 
     // the title of the Post
     private String title;
 
-    // the content of the Post
-    private String content;
+    // the date of the creation
+    private Date timestamp;
 
-    // the timestamp of the creation
-    private long timestamp;
-
-    public Post (String title, int id) {
-        this(title, "", id);
+    public Post() {
+        this("");
     }
 
-    public Post (String title, String content, int id) {
+    public Post (String title) {
         this.title = title;
-        this.content = content;
-        this.timestamp = System.currentTimeMillis();
-        this.id = id;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    @PrePersist
+    public void createTimestamp() {
+        this.setTimestamp(new Date());
     }
 
     public String getTitle() {
@@ -44,19 +51,11 @@ public class Post {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public long getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 }
