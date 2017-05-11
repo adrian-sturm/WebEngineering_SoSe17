@@ -1,4 +1,4 @@
-package com.micromata.webengineering.demo.post;
+package com.micromata.webengineering.myforum.post;
 
 import org.springframework.data.repository.CrudRepository;
 

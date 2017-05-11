@@ -1,6 +1,4 @@
-package com.micromata.webengineering.demo.post;
-
-import org.springframework.data.annotation.CreatedDate;
+package com.micromata.webengineering.myforum.post;
 
 import javax.persistence.*;
 import java.util.Date;
