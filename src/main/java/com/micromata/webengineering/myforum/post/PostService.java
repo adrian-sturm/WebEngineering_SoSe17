@@ -1,5 +1,9 @@
 package com.micromata.webengineering.myforum.post;
 
+import com.micromata.webengineering.myforum.user.User;
+import com.micromata.webengineering.myforum.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,8 +12,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PostService {
+    private static final Logger LOG = LoggerFactory.getLogger(PostService.class);
+
     @Autowired
     private PostRepository repository;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * Retrieve the list of all posts.
@@ -17,6 +26,9 @@ public class PostService {
      * @return post list
      */
     public Iterable<Post> getPosts() {
+        User currentUser = userService.getCurrentUser();
+        LOG.info("Current User {}", currentUser);
+
         return repository.findAll();
     }
 
@@ -35,9 +47,10 @@ public class PostService {
      * @param post the post to add.
      * @return the id of the newly added post
      */
-    public long addPost(Post post) {
+    public void addPost(Post post) {
+        // set the currently logged in user as the author of the post
+        post.setAuthor(userService.getCurrentUser());
         repository.save(post);
-        return post.getId();
     }
 
     /**
@@ -45,6 +58,15 @@ public class PostService {
      * @param id the id of the Post to delete
      */
     public void deletePost(long id) {
+        Post post = repository.findOne(id);
+        if (post == null) {
+            LOG.error("No post found with id = "+ id);
+            return;
+        }
+        if (!post.getAuthor().equals(userService.getCurrentUser())) {
+            LOG.error("User {} is not the owner of post wit id = {} !", userService.getCurrentUser(), id);
+            return;
+        }
         repository.delete(id);
     }
 }

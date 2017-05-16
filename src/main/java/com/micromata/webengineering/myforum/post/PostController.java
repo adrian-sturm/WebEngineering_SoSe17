@@ -1,6 +1,9 @@
 package com.micromata.webengineering.myforum.post;
 
+import com.micromata.webengineering.myforum.util.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -11,34 +14,40 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @RequestMapping(value = "/post", method = RequestMethod.GET)
+    @Autowired
+    private AddressService addressService;
+
+    @RequestMapping(value = "/api/post", method = RequestMethod.GET)
     public Iterable<Post> getPostList() {
         return postService.getPosts();
     }
 
-    @RequestMapping(value = "/post/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/post/{id}", method = RequestMethod.GET)
     public Post getPostById(@PathVariable int id) {
         return postService.getPostById(id);
     }
 
-    @RequestMapping(value = "/post/add", method = RequestMethod.POST)
-    public PostResponse addPost(@RequestParam("title") String title)
+    @RequestMapping(value = "/api/post/add", method = RequestMethod.POST)
+    public ResponseEntity<Object> addPost(@RequestBody Post post)
     {
-        return new PostResponse(postService.addPost(new Post(title)));
+        if (post != null && post.getTitle().length() > Post.TITLE_LENGTH) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        postService.addPost(post);
+        return ResponseEntity.ok(new PostResponse(post.getId()));
     }
 
-    @RequestMapping(value = "/post/delete/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/api/post/delete/{id}", method = RequestMethod.DELETE)
     public void deletePost(@PathVariable int id) {
         postService.deletePost(id);
     }
 
     private class PostResponse {
-        private static final String BASE_URL = "http://localhost:8080/post/";
 
         private String url;
 
         public PostResponse(long postId) {
-            url = BASE_URL + postId;
+            url = addressService.getServerURL() +"api/post/"+ postId;
         }
 
         public String getUrl() {
