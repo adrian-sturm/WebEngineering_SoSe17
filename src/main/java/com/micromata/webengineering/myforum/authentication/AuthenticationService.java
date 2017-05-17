@@ -14,9 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class AuthenticationService {
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
+
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // millis * sec * minute = 60 mins
 
     @Autowired
     UserService userService;
@@ -35,7 +39,7 @@ public class AuthenticationService {
      */
     public UserToken login(String email, String password) {
         String encryptedPassword = passwordEncoder.encode(password);
-        User user = userService.getUser(email, password);
+        User user = userService.getUser(email, encryptedPassword);
 
         if (user == null) {
             LOG.error("Error: User with email="+ email +" and specified password not found!");
@@ -45,6 +49,7 @@ public class AuthenticationService {
         String token = Jwts.builder()
                 .setSubject(email)
                 .setId(user.getId().toString())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
 

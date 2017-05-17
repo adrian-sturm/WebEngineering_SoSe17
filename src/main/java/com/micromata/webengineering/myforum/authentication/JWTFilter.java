@@ -18,6 +18,8 @@ import java.io.IOException;
 
 public class JWTFilter extends GenericFilterBean {
     private static final Logger LOG = LoggerFactory.getLogger(JWTFilter.class);
+    public static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final String TOKEN_PREFIX = "Bearer";
 
     private AuthenticationService authenticationService;
 
@@ -31,8 +33,8 @@ public class JWTFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         // check for authorization token
-        String authorization = httpServletRequest.getHeader("Authorization");
-        if (!StringUtils.startsWithIgnoreCase(authorization, "Bearer")) {
+        String authorization = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+        if (!StringUtils.startsWithIgnoreCase(authorization, TOKEN_PREFIX)) {
             LOG.warn("No authorization token submitted");
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             return;
