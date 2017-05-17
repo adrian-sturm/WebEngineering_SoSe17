@@ -38,8 +38,9 @@ public class AuthenticationService {
      * @return a UserToken Object or null if the login credentials matched no user in the database
      */
     public UserToken login(String email, String password) {
+        // TODO: How to use encryption and where?
         String encryptedPassword = passwordEncoder.encode(password);
-        User user = userService.getUser(email, encryptedPassword);
+        User user = userService.getUser(email, password);
 
         if (user == null) {
             LOG.error("Error: User with email="+ email +" and specified password not found!");
