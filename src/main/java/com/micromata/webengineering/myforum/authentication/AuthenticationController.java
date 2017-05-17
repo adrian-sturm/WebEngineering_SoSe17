@@ -1,5 +1,7 @@
 package com.micromata.webengineering.myforum.authentication;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class AuthenticationController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationService.class);
+
     @Autowired
     private AuthenticationService authenticationService;
 
@@ -20,8 +24,10 @@ public class AuthenticationController {
         AuthenticationService.UserToken token = authenticationService.login(userLogin.email, userLogin.password);
 
         if (token == null) {
+            LOG.info("Login rejected.");
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+        LOG.info("Successful login from user {}", userLogin.email);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 

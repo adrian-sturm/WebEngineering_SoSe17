@@ -45,11 +45,11 @@ public class PostService {
      * Add a new post.
      *
      * @param post the post to add.
-     * @return the id of the newly added post
      */
     public void addPost(Post post) {
         // set the currently logged in user as the author of the post
         post.setAuthor(userService.getCurrentUser());
+        LOG.info("New post added: {}", post);
         repository.save(post);
     }
 
@@ -67,6 +67,7 @@ public class PostService {
             LOG.error("User {} is not the owner of post wit id = {} !", userService.getCurrentUser(), id);
             return;
         }
+        LOG.info("Post with id {} successfully deleted.", id);
         repository.delete(id);
     }
 }
