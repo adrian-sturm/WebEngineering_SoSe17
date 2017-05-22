@@ -26,9 +26,7 @@ public class PostService {
      * @return post list
      */
     public Iterable<Post> getPosts() {
-        User currentUser = userService.getCurrentUser();
-        LOG.info("Current User {}", currentUser);
-
+        LOG.info("Retrieved all posts");
         return repository.findAll();
     }
 
@@ -38,6 +36,7 @@ public class PostService {
      * @return the Post wih the specified id or null if the id is not in use
      */
     public Post getPostById(long id) {
+        LOG.info("Retrieved post with id {}", id);
         return repository.findOne(id);
     }
 

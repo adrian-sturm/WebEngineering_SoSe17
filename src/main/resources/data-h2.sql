@@ -1,7 +1,7 @@
 -- clear the db on restart
+DELETE FROM COMMENT;
 DELETE FROM POST;
 DELETE FROM USER_;
-DELETE FROM COMMENT;
 
 -- insert two test users
 INSERT INTO USER_ (id, email, PASSWORD) VALUES
