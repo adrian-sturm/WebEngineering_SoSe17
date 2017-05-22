@@ -23,15 +23,14 @@ public class Post {
     private String title;
 
     // the date of the creation
+    @Basic(optional = false)
+    @Column(insertable = false, updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
 
     // the author of this post
     @ManyToOne(optional = false)
     private User author;
-
-    public Post() {
-        this("");
-    }
 
     public Post (String title) {
         this.title = title;
@@ -67,11 +66,6 @@ public class Post {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    @PrePersist
-    public void createTimestamp() {
-        this.setTimestamp(new Date());
     }
 
     @Override

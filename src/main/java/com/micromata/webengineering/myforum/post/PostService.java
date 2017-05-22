@@ -64,7 +64,7 @@ public class PostService {
             return;
         }
         if (!post.getAuthor().equals(userService.getCurrentUser())) {
-            LOG.error("User {} is not the owner of post wit id = {} !", userService.getCurrentUser(), id);
+            LOG.error("User {} is not the owner of post with id = {} !", userService.getCurrentUser(), id);
             return;
         }
         LOG.info("Post with id {} successfully deleted.", id);

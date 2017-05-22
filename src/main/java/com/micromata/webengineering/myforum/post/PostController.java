@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * HTTP endpoint for a post-related HTTP requests.
  */
 @RestController
+@RequestMapping("/api/post")
 public class PostController {
     @Autowired
     private PostService postService;
@@ -17,17 +18,17 @@ public class PostController {
     @Autowired
     private AddressService addressService;
 
-    @RequestMapping(value = "/api/post", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public Iterable<Post> getPostList() {
         return postService.getPosts();
     }
 
-    @RequestMapping(value = "/api/post/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public Post getPostById(@PathVariable int id) {
         return postService.getPostById(id);
     }
 
-    @RequestMapping(value = "/api/post/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseEntity<Object> addPost(@RequestBody Post post)
     {
         if (post != null && post.getTitle().length() > Post.TITLE_LENGTH) {
@@ -37,8 +38,8 @@ public class PostController {
         return ResponseEntity.ok(new PostResponse(post.getId()));
     }
 
-    @RequestMapping(value = "/api/post/delete/{id}", method = RequestMethod.DELETE)
-    public void deletePost(@PathVariable int id) {
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public void deletePost(@PathVariable Long id) {
         postService.deletePost(id);
     }
 
