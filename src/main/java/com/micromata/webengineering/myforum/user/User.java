@@ -2,10 +2,7 @@ package com.micromata.webengineering.myforum.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 /**
  * A user of the application
@@ -19,7 +16,7 @@ public class User {
     @GeneratedValue
     private Long id;
 
-    @Column(length = EMAIL_LENGTH)
+    @Column(length = EMAIL_LENGTH, unique = true)
     private String email;
 
     @JsonIgnore

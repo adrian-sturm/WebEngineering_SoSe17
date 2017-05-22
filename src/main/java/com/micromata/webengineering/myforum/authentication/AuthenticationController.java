@@ -31,6 +31,18 @@ public class AuthenticationController {
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "register", method = RequestMethod.PUT)
+    public ResponseEntity<AuthenticationService.UserToken> register(@RequestBody UserLogin userLogin) {
+        AuthenticationService.UserToken token = authenticationService.register(userLogin.email, userLogin.password);
+
+        if (token == null) {
+            LOG.info("Registration or login rejected.");
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        LOG.info("Successfully registered new user '{}'", userLogin.email);
+        return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
     public static class UserLogin {
         public String email;
         public String password;

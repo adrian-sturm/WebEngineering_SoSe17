@@ -4,6 +4,8 @@ import com.micromata.webengineering.myforum.user.User;
 import com.micromata.webengineering.myforum.user.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.h2.jdbc.JdbcSQLException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +25,10 @@ public class AuthenticationService {
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // millis * sec * minute = 60 mins
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     private String secret = "Topsy Cretts is 23";
 
@@ -38,12 +40,17 @@ public class AuthenticationService {
      * @return a UserToken Object or null if the login credentials matched no user in the database
      */
     public UserToken login(String email, String password) {
-        // TODO: How to use encryption and where?
-        String encryptedPassword = passwordEncoder.encode(password);
-        User user = userService.getUser(email, password);
+        User user = userService.getUser(email);
 
+        // check if a user with the specified email exists
         if (user == null) {
-            LOG.error("Error: User with email="+ email +" and specified password not found!");
+            LOG.error("User with email='{}' not found!");
+            return null;
+        }
+
+        // check if the password matches the hashed password in the db
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            LOG.error("Invalid password!");
             return null;
         }
 
@@ -58,6 +65,29 @@ public class AuthenticationService {
         userToken.user = user;
         userToken.token = token;
         return userToken;
+    }
+
+    /**
+     * Creates a new user in the database if the email is not already in use
+     *
+     * @param email the unique email of the user
+     * @param password the password of the user
+     * @return a user token for the automatically logged in user or null if an error occured
+     */
+    public UserToken register(String email, String password) {
+        // encrypt the password
+        String encryptedPassword = passwordEncoder.encode(password);
+        LOG.debug("Encryption of password '{}' is: {}", password, encryptedPassword);
+        // persist the new user
+        try {
+            userService.addNewUser(email, encryptedPassword);
+        } catch (Exception e) {
+            LOG.error("The email '{}' is already in use!", email);
+        }
+
+        // login the new user
+        LOG.info("Attempting to log in user '{}'", email);
+        return login(email, password);
     }
 
     /**
