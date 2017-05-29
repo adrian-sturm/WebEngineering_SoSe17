@@ -1,5 +1,7 @@
 package com.micromata.webengineering.myforum.comment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.micromata.webengineering.myforum.post.Post;
 import com.micromata.webengineering.myforum.user.User;
 
@@ -12,12 +14,9 @@ public class Comment {
     public static final int TEXT_LENGTH = 1024;
 
     @Id
+    @JsonIgnore
     @GeneratedValue
     private Long id;
-
-    // the post this comment refers to
-    @ManyToOne(optional = false)
-    private Post post;
 
     // the author of this comment
     @ManyToOne(optional = false)
@@ -31,14 +30,6 @@ public class Comment {
     @Column(insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timestamp;
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
 
     public Date getTimestamp() {
         return timestamp;
@@ -55,10 +46,13 @@ public class Comment {
     public void setAuthor(User author) {
         this.author = author;
     }
+
+    @JsonProperty
     public Long getId() {
         return id;
     }
 
+    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }

@@ -1,6 +1,7 @@
 package com.micromata.webengineering.myforum.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 
@@ -13,6 +14,7 @@ public class User {
     public static final int EMAIL_LENGTH = 1024;
 
     @Id
+    @JsonIgnore
     @GeneratedValue
     private Long id;
 
@@ -22,11 +24,12 @@ public class User {
     @JsonIgnore
     private String password;
 
-
+    @JsonProperty
     public Long getId() {
         return id;
     }
 
+    @JsonIgnore
     public void setId(Long id) {
         this.id = id;
     }

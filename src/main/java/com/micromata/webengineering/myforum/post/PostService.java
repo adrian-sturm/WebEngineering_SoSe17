@@ -1,5 +1,6 @@
 package com.micromata.webengineering.myforum.post;
 
+import com.micromata.webengineering.myforum.comment.Comment;
 import com.micromata.webengineering.myforum.user.User;
 import com.micromata.webengineering.myforum.user.UserService;
 import org.slf4j.Logger;
@@ -48,6 +49,9 @@ public class PostService {
     public void addPost(Post post) {
         // set the currently logged in user as the author of the post
         post.setAuthor(userService.getCurrentUser());
+        for (Comment c : post.getComments()) {
+            c.setAuthor(userService.getCurrentUser());
+        }
         LOG.info("New post added: {}", post);
         repository.save(post);
     }
@@ -66,7 +70,26 @@ public class PostService {
             LOG.error("User {} is not the owner of post with id = {} !", userService.getCurrentUser(), id);
             return;
         }
+        // TODO: delete all comments for this post before deleting the post itself
         LOG.info("Post with id {} successfully deleted.", id);
         repository.delete(id);
+    }
+
+    /**
+     * Append new comment to an existing post.
+     *
+     * @param id      id of the post
+     * @param comment comment to append
+     */
+    public void addComment(Long id, Comment comment) {
+        LOG.info("Adding comment to post. user={}, id={}, commentId={}", userService.getCurrentUser().getEmail(),
+                id, comment.getId());
+        Post post = repository.findOne(id);
+        if (post == null) {
+            throw new IllegalArgumentException("Post not found. id=" + id);
+        }
+
+        post.getComments().add(comment);
+        repository.save(post);
     }
 }

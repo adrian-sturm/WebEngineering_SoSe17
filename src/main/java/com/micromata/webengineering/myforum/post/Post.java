@@ -1,9 +1,14 @@
 package com.micromata.webengineering.myforum.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.micromata.webengineering.myforum.comment.Comment;
 import com.micromata.webengineering.myforum.user.User;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A single Post in the Forum
@@ -15,6 +20,7 @@ public class Post {
 
     // the identifier for this Post
     @Id
+    @JsonIgnore
     @GeneratedValue
     private long id;
 
@@ -32,16 +38,29 @@ public class Post {
     @ManyToOne(optional = false)
     private User author;
 
+    @OneToMany
+    private List<Comment> comments = new ArrayList<>();
+
     public Post (String title) {
         this.title = title;
     }
 
+    @JsonProperty
     public long getId() {
         return id;
     }
 
+    @JsonIgnore
     public void setId(long id) {
         this.id = id;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public User getAuthor() {

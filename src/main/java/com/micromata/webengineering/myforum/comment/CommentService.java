@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
 @Service
 public class CommentService {
     private static final Logger LOG = LoggerFactory.getLogger(PostService.class);
@@ -17,14 +19,27 @@ public class CommentService {
     @Autowired
     private UserService userService;
 
-    public Iterable<Comment> getCommentsForPost(Long post_id) {
-        return commentRepository.findByPostId(post_id);
-    }
+    @Autowired PostService postService;
 
-    public void addCommentToPost(Comment comment) {
+    /**
+     * Add a comment to an existing post.
+     *
+     * @param postId id of a post
+     * @param text   text of the comment
+     * @return id of the corresponding comment
+     */
+    @Transactional
+    public Long addCommentToPost(Long postId, String text) {
+        // Persist comment.
+        Comment comment = new Comment();
+        comment.setText(text);
         comment.setAuthor(userService.getCurrentUser());
-        LOG.info("Added new comment to post {}", comment.getPost());
         commentRepository.save(comment);
+
+        // Append technically to post.
+        postService.addComment(postId, comment);
+
+        return comment.getId();
     }
 
     public void deleteComment(Long id) {
@@ -33,11 +48,12 @@ public class CommentService {
             LOG.error("No comment with id =  {} found!", id);
             return;
         }
-        if (comment.getAuthor() != userService.getCurrentUser()) {
+        if (!comment.getAuthor().equals(userService.getCurrentUser())) {
             LOG.error("User {} is not the owner of comment {}!", userService.getCurrentUser(), comment);
             return;
         }
         LOG.info("Comment with id = {} successfully deleted.", id);
+        // TODO: update post with this comment
     }
 
 }
