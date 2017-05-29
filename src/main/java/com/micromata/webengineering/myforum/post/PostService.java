@@ -1,7 +1,6 @@
 package com.micromata.webengineering.myforum.post;
 
 import com.micromata.webengineering.myforum.comment.Comment;
-import com.micromata.webengineering.myforum.user.User;
 import com.micromata.webengineering.myforum.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
