@@ -2,15 +2,53 @@ package com.micromata.webengineering.myforum.user;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.hibernate.exception.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+
+    public static final long ID_ANONYMOUS = -1L;
+
     @Autowired
     private UserRepository userRepository;
+
+    /**
+     * Sets the current user to anonymous.
+     */
+    public void setAnonymous() {
+        setCurrentUser(-1L, "<anonymous>");
+    }
+
+    /**
+     * Check if the current user is not authenticated.
+     *
+     * @return true if the user is not authenticated.
+     */
+    public boolean isAnonymous() {
+        return getCurrentUser().getId() == ID_ANONYMOUS;
+    }
+
+    /**
+     * Set a user for the current request.
+     *
+     * @param id    user id
+     * @param email user email
+     */
+    public void setCurrentUser(Long id, String email) {
+        LOG.debug("Setting user context. id={}, user={}", id, email);
+        User user = new User();
+        user.setId(id);
+        user.setEmail(email);
+        UsernamePasswordAuthenticationToken secAuth = new UsernamePasswordAuthenticationToken(user, null);
+        SecurityContextHolder.getContext().setAuthentication(secAuth);
+    }
 
     /**
      * Retrieve the currently active user or null, if no user is logged in.

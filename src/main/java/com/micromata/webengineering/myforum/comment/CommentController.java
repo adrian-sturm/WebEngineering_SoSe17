@@ -1,5 +1,6 @@
 package com.micromata.webengineering.myforum.comment;
 
+import com.micromata.webengineering.myforum.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,16 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseEntity<Object> addComment(@PathVariable Long postId, @RequestBody Comment comment)
     {
+        if (userService.isAnonymous()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         if (comment != null && comment.getText().length() > Comment.TEXT_LENGTH) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

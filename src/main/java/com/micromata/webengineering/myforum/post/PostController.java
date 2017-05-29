@@ -1,5 +1,6 @@
 package com.micromata.webengineering.myforum.post;
 
+import com.micromata.webengineering.myforum.user.UserService;
 import com.micromata.webengineering.myforum.util.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ public class PostController {
     @Autowired
     private AddressService addressService;
 
+    @Autowired
+    private UserService userService;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public Iterable<Post> getPostList() {
         return postService.getPosts();
@@ -31,6 +35,10 @@ public class PostController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResponseEntity<Object> addPost(@RequestBody Post post)
     {
+        if (userService.isAnonymous()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         if (post != null && post.getTitle().length() > Post.TITLE_LENGTH) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -1,5 +1,6 @@
 package com.micromata.webengineering.myforum.authentication;
 
+import com.micromata.webengineering.myforum.user.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureException;
 import org.slf4j.Logger;
@@ -23,8 +24,11 @@ public class JWTFilter extends GenericFilterBean {
 
     private AuthenticationService authenticationService;
 
-    public JWTFilter(AuthenticationService authenticationService) {
+    private UserService userService;
+
+    public JWTFilter(AuthenticationService authenticationService, UserService userService) {
         this.authenticationService = authenticationService;
+        this.userService = userService;
     }
 
     @Override
@@ -35,8 +39,11 @@ public class JWTFilter extends GenericFilterBean {
         // check for authorization token
         String authorization = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
         if (!StringUtils.startsWithIgnoreCase(authorization, TOKEN_PREFIX)) {
-            LOG.warn("No authorization token submitted");
-            httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+            LOG.info("No authorization token submitted");
+            // allow anonymous users
+            LOG.info("Setting anonymous user");
+            userService.setAnonymous();
+            filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 
