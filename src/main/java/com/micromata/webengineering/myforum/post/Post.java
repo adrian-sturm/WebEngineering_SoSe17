@@ -18,6 +18,11 @@ public class Post {
 
     public static final int TITLE_LENGTH = 1024;
 
+    // default constructor
+    public Post() {
+
+    }
+
     // the identifier for this Post
     @Id
     @JsonIgnore
