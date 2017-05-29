@@ -21,6 +21,10 @@ public class CommentService {
 
     @Autowired PostService postService;
 
+    public Iterable<Comment> getCommentsForPost(Long postId) {
+        return postService.getPostById(postId).getComments();
+    }
+
     /**
      * Add a comment to an existing post.
      *

@@ -30,6 +30,11 @@ public class CommentController {
         return ResponseEntity.ok(true);
     }
 
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public Iterable<Comment> getCommentList(@PathVariable Long postId) {
+        return commentService.getCommentsForPost(postId);
+    }
+
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
     public void deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
