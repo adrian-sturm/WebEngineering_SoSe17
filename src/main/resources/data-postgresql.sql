@@ -11,8 +11,8 @@ INSERT INTO USER_ (id, email, PASSWORD) VALUES
 
 -- insert two test posts
 INSERT INTO POST (id, title, Timestamp, AUTHOR_ID) VALUES
-  (1, 'post1', CURRENT_TIMESTAMP , 1),
-  (2, 'post2', CURRENT_TIMESTAMP, 2);
+  (1, 'heroku_post1', CURRENT_TIMESTAMP , 1),
+  (2, 'heroku_post2', CURRENT_TIMESTAMP, 2);
 
 -- insert three test comments
 INSERT INTO COMMENT (id, text, Timestamp, author_id) VALUES
