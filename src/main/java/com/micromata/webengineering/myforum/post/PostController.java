@@ -27,9 +27,9 @@ public class PostController {
         return postService.getPosts();
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public Post getPostById(@PathVariable int id) {
-        return postService.getPostById(id);
+    @RequestMapping(value = "/{postId}", method = RequestMethod.GET)
+    public Post getPostById(@PathVariable int postId) {
+        return postService.getPostById(postId);
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
